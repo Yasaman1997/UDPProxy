@@ -72,7 +72,7 @@ public class Server extends Thread {
                 e.printStackTrace();
             }
 
-            packet = new DatagramPacket(buf, buf.length, address, port); // answer packet
+            packet = new DatagramPacket(res, res.length, address, port); // answer packet
 
             try {
                 socket.send(packet);
