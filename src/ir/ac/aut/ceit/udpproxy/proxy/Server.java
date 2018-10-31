@@ -1,10 +1,7 @@
 package ir.ac.aut.ceit.udpproxy.proxy;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.net.*;
 
 public class Server extends Thread {
     private DatagramSocket socket;
@@ -46,17 +43,24 @@ public class Server extends Thread {
             String received
                     = new String(packet.getData(), 0, packet.getLength());
             String[] headers = received.split("\n");
-            String Host = "";
+            String host = "";
             for (String header : headers) {
                 String[] parsedHeader = header.split(":");
                 if (parsedHeader[0].equals("Host:")) { // Host option is found
-                    Host = parsedHeader[1];
+                    host = parsedHeader[1];
                     break;
                 }
             }
-            if (Host.isEmpty()) {
+            if (host.isEmpty()) {
                 continue;
                 // This packet is not valid so Goodbye
+            }
+
+            // Lets connect to the host that is found.
+            try {
+                Socket httpSocket = new Socket(host, 80);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
             packet = new DatagramPacket(buf, buf.length, address, port); // answer packet
