@@ -6,7 +6,8 @@ import java.net.*;
 public class Server extends Thread {
     private DatagramSocket socket;
     private boolean running;
-    private byte[] buf = new byte[256]; // maximum buffer size is 256
+    private byte[] buf = new byte[256]; // maximum buffer size is 256 for incoming packets
+    private byte[] res = new byte[1024]; // maximum buffer size is 1024 for http results
     // TODO: packet segmentation
 
     /**
@@ -59,6 +60,14 @@ public class Server extends Thread {
             // Lets connect to the host that is found.
             try {
                 Socket httpSocket = new Socket(host, 80);
+                httpSocket.getOutputStream().write(buf); // write client packet without any change
+
+                // read all of the response
+                int read = 0;
+                do {
+                    read += httpSocket.getInputStream().read(res, read, res.length);
+                } while (read <= 0);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
