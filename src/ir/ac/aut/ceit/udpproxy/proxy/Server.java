@@ -39,13 +39,27 @@ public class Server extends Thread {
 
             InetAddress address = packet.getAddress();
             int port = packet.getPort(); // finds sender port in order to answer on
-            packet = new DatagramPacket(buf, buf.length, address, port); // answer packet
 
             // proxies the request to its destination. finds destination from Host option of HTTP packets.
             // Host option is a single line in request message so it parses thee message line by line in order
             // to find Host option
             String received
                     = new String(packet.getData(), 0, packet.getLength());
+            String[] headers = received.split("\n");
+            String Host = "";
+            for (String header : headers) {
+                String[] parsedHeader = header.split(":");
+                if (parsedHeader[0].equals("Host:")) { // Host option is found
+                    Host = parsedHeader[1];
+                    break;
+                }
+            }
+            if (Host.isEmpty()) {
+                continue;
+                // This packet is not valid so Goodbye
+            }
+
+            packet = new DatagramPacket(buf, buf.length, address, port); // answer packet
 
             try {
                 socket.send(packet);
