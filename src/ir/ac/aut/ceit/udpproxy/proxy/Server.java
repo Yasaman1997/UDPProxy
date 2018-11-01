@@ -33,6 +33,7 @@ public class Server extends Thread {
                 socket.receive(packet);
             } catch (IOException e) {
                 e.printStackTrace();
+                continue; // try to read a new packet
             }
 
             InetAddress address = packet.getAddress();
@@ -43,6 +44,10 @@ public class Server extends Thread {
             // to find Host option
             String received
                     = new String(packet.getData(), 0, packet.getLength());
+
+            // logs the arrived packet
+            System.out.printf("Packet arrived from: %s:%d with content %s\n", address.toString(), port, received);
+
             String[] headers = received.split("\n");
             String host = "";
             for (String header : headers) {
