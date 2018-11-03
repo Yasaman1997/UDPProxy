@@ -73,6 +73,10 @@ public class Server extends Thread {
                     read += httpSocket.getInputStream().read(res, read, res.length);
                 } while (read <= 0);
 
+                // Check response status code
+                // 404 indicates page not found and we must return a valid error
+                // 301 and 302 indicate redirection and we must redirect to a given destination
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
