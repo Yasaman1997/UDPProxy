@@ -51,7 +51,7 @@ public class Server extends Thread {
             String[] headers = received.split("\n");
             String host = "";
             for (String header : headers) {
-                String[] parsedHeader = header.split(":");
+                String[] parsedHeader = header.split(": ");
                 if (parsedHeader[0].equals("Host")) { // Host option is found
                     host = parsedHeader[1];
                     break;
@@ -61,6 +61,7 @@ public class Server extends Thread {
                 continue;
                 // This packet is not valid so Goodbye
             }
+            System.out.printf("Found Host: %s\n", host);
 
             // Lets connect to the host that is found.
             try {
@@ -73,7 +74,10 @@ public class Server extends Thread {
                 do {
                     read += size;
                     size = httpSocket.getInputStream().read(res, read, res.length);
-                } while (size > 0);
+                } while (size > 0 && size < buf.length);
+
+                // as you can google response is larger than 1024 so you must do segmentation
+                System.out.printf("%s Response: %s\n", host, new String(res));
 
                 // Check response status code
                 // 404 indicates page not found and we must return a valid error
