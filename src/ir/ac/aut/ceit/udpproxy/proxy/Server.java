@@ -52,7 +52,7 @@ public class Server extends Thread {
             String host = "";
             for (String header : headers) {
                 String[] parsedHeader = header.split(":");
-                if (parsedHeader[0].equals("Host:")) { // Host option is found
+                if (parsedHeader[0].equals("Host")) { // Host option is found
                     host = parsedHeader[1];
                     break;
                 }
@@ -67,11 +67,13 @@ public class Server extends Thread {
                 Socket httpSocket = new Socket(host, 80);
                 httpSocket.getOutputStream().write(buf); // write client packet without any change
 
-                // read all of the response
+                // read all of the http response
                 int read = 0;
+                int size = 0;
                 do {
-                    read += httpSocket.getInputStream().read(res, read, res.length);
-                } while (read <= 0);
+                    read += size;
+                    size = httpSocket.getInputStream().read(res, read, res.length);
+                } while (size > 0);
 
                 // Check response status code
                 // 404 indicates page not found and we must return a valid error
